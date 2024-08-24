@@ -1,0 +1,113 @@
+﻿@page "/"
+@using HerexamenYannickMarijnissen.Models
+@using HerexamenYannickMarijnissen.ViewModels
+@inject GameListViewModel ViewModel
+
+<div class="container mt-5">
+    <h1 class="text-center">Bordspellen</h1>
+
+    @if (ViewModel.SelectedGameId == null)
+    {
+        <!-- Toon de zoekinvoer en de lijst met bordspellen -->
+        <div class="form-group">
+            <input type="text" @bind="ViewModel.SearchTerm" @oninput="ViewModel.OnSearchTermChanged" class="form-control" placeholder="Zoek bordspellen..." />
+        </div>
+
+        <p>Aantal bordspellen geladen: @ViewModel.FilteredGames.Count</p> <!-- Debugging output -->
+
+        <ul class="list-group">
+            @if (ViewModel.FilteredGames != null && ViewModel.FilteredGames.Any())
+            {
+                @foreach (var game in ViewModel.FilteredGames)
+                {
+                    <li class="list-group-item">
+                        <h5>@game.Name</h5>
+                        <p>@game.Description</p>
+                        <button class="btn btn-info" @onclick="() => ViewModel.ToggleDetails(game.Id)">Bekijk details</button>
+                    </li>
+                }
+            }
+            else
+            {
+                <p>Geen bordspellen gevonden.</p>
+            }
+        </ul>
+
+        <!-- Toon het formulier om een nieuw bordspel toe te voegen -->
+        <h2 class="mt-5">Voeg een nieuw bordspel toe</h2>
+
+        <EditForm Model="@ViewModel.NewGame" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="form-group">
+                <label for="name">Naam:</label>
+                <InputText id="name" class="form-control" @bind-Value="ViewModel.NewGame.Name" required />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Beschrijving:</label>
+                <InputTextArea id="description" class="form-control" @bind-Value="ViewModel.NewGame.Description" required />
+            </div>
+
+            <div class="form-group">
+                <label for="players">Spelers (comma-separated):</label>
+                <InputText id="players" class="form-control" @bind-Value="ViewModel.NewGame.PlayersAsString" required />
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Speeltijd:</label>
+                <InputText id="duration" class="form-control" @bind-Value="ViewModel.NewGame.Duration" required />
+            </div>
+
+            <div class="form-group">
+                <label for="difficulty">Moeilijkheid:</label>
+                <InputText id="difficulty" class="form-control" @bind-Value="ViewModel.NewGame.Difficulty" required />
+            </div>
+
+            <div class="form-group">
+                <label for="reviews">Recensies (comma-separated):</label>
+                <InputText id="reviews" class="form-control" @bind-Value="ViewModel.NewGame.ReviewsAsString" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Toevoegen</button>
+        </EditForm>
+    }
+    else
+    {
+        <!-- Toon de details van het geselecteerde bordspel -->
+        var selectedGame = ViewModel.FilteredGames.FirstOrDefault(g => g.Id == ViewModel.SelectedGameId);
+        if (selectedGame != null)
+        {
+            <h3>@selectedGame.Name</h3>
+            <p>@selectedGame.Description</p>
+            <small>Spelers: @string.Join(", ", selectedGame.Players)</small>
+
+            <br />
+            <small>Speeltijd: @selectedGame.Duration</small>
+
+            <br />
+            <small>Moeilijkheid: @selectedGame.Difficulty</small>
+
+            <br />
+            <small>Recensies: @string.Join(", ", selectedGame.Reviews)</small>
+
+            <br />
+            <button class="btn btn-secondary" @onclick="OnShowListClick">Terug naar lijst</button>
+        }
+    }
+</div>
+
+@code {
+   
+    private async Task HandleValidSubmit()
+    {
+        await ViewModel.AddGameAsync();
+    }
+
+    private async Task OnShowListClick()
+    {
+        ViewModel.ShowList();
+        await InvokeAsync(StateHasChanged); // Indien nodig, voor het geval StateHasChanged nodig is
+    }
+}
