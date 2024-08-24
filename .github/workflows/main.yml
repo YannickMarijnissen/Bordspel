@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4  # Update naar de nieuwste versie
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4  # Update naar de nieuwste versie
         with:
           dotnet-version: '6.0' # Zorg ervoor dat dit overeenkomt met jouw .NET versie
 
