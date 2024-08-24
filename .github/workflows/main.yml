@@ -21,15 +21,15 @@ jobs:
 
       - name: Restore dependencies
         run: dotnet restore
-        working-directory: bordspel/HerexamenYannickMarijnissen  # Specificeer de juiste werkdirectory
+        working-directory: HerexamenYannickMarijnissen  # Specificeer de juiste werkdirectory
 
       - name: Build
         run: dotnet build --configuration Release
-        working-directory: bordspel/HerexamenYannickMarijnissen  # Specificeer de juiste werkdirectory
+        working-directory: HerexamenYannickMarijnissen  # Specificeer de juiste werkdirectory
 
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish
-        working-directory: bordspel/HerexamenYannickMarijnissen  # Specificeer de juiste werkdirectory
+        working-directory: HerexamenYannickMarijnissen  # Specificeer de juiste werkdirectory
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
